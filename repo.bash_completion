@@ -21,6 +21,27 @@ _find_repo() {
 declare -A cmd_handlers
 cmd_handlers=(
     ["init"]=_repo_init
+    ["help"]=_repo_help
+    ["abandon"]=_repo_abandon
+    ["branch"]=_repo_branch
+    ["branches"]=_repo_branches
+    ["checkout"]=_repo_checkout
+    ["cherry-pick"]=_repo_cherry_pick
+    ["diff"]=_repo_diff
+    ["download"]=_repo_download
+    ["forall"]=_repo_forall
+    ["grep"]=_repo_grep
+    ["list"]=_repo_list
+    ["prune"]=_repo_prune
+    ["rebase"]=_repo_rebase
+    ["selfupdate"]=_repo_selfupdate
+    ["smartsync"]=_repo_smartsync
+    ["stage"]=_repo_stage
+    ["start"]=_repo_start
+    ["status"]=_repo_status
+    ["status"]=_repo_sync
+    ["upload"]=_repo_upload
+    ["version"]=_repo_version
 )
 
 _simple_options() {
@@ -49,6 +70,230 @@ _repo_init() {
         "--repo-url"
         "--repo-branch"
         "--no-repo-verify"
+    )
+
+    _simple_options "${opts[*]}"
+}
+
+_repo_help() {
+    local opts=(
+        "-a" "--all"
+        "-h" "--help"
+    )
+
+    _simple_options "${opts[*]}"
+}
+
+_repo_anandon() {
+    local opts=(
+        "-h" "--help"
+    )
+
+    _simple_options "${opts[*]}"
+}
+
+_repo_branch() {
+    local opts=(
+        "-h" "--help"
+    )
+
+    _simple_options "${opts[*]}"
+}
+
+_repo_branches() {
+    local opts=(
+        "-h" "--help"
+    )
+
+    _simple_options "${opts[*]}"
+}
+
+_repo_checkout() {
+    local opts=(
+        "-h" "--help"
+    )
+
+    _simple_options "${opts[*]}"
+}
+
+_repo_cherry_pick() {
+    local opts=(
+        "-h" "--help"
+    )
+
+    _simple_options "${opts[*]}"
+}
+
+_repo_diff() {
+    local opts=(
+        "-h" "--help"
+    )
+
+    _simple_options "${opts[*]}"
+}
+
+_repo_download() {
+    local opts=(
+        "-h" "--help"
+    )
+
+    _simple_options "${opts[*]}"
+}
+
+_repo_forall() {
+    local opts=(
+        "-c" "--command"
+        "-h" "--help"
+        "-p"
+        "-v" "--verbose"
+    )
+
+    # TODO: options must be context sensitive here
+    _simple_options "${opts[*]}"
+}
+
+_repo_grep() {
+    local opts=(
+        "-h" "--help"
+        "--cached"
+        "-r" "--revision"
+        "-e"
+        "-i" "--ignore-case"
+        "-a" "--text"
+        "-I"
+        "-w" "--word-regexp"
+        "-v" "--invert-match"
+        "-G" "--basic-regexp"
+        "-E" "--extended-regexp"
+        "-F" "--fixed-strings"
+        "--all-match"
+        "--and" "--or" "--not"
+        "-(" "-)"
+        "-n"
+        "-C"
+        "-B"
+        "-A"
+        "-l" "--name-only" "--files-with-matches"
+        "-L" "--files-without-match"
+    )
+
+    _simple_options "${opts[*]}"
+}
+
+_repo_list() {
+    local opts=(
+        "-h" "--help"
+    )
+
+    _simple_options "${opts[*]}"
+}
+
+_repo_prune() {
+    local opts=(
+        "-h" "--help"
+    )
+
+    _simple_options "${opts[*]}"
+}
+
+_repo_rebase() {
+    local opts=(
+        "-h" "--help"
+        "-i" "--interactive"
+        "-f" "--force-rebase"
+        "--no-ff"
+        "-q" "--quiet"
+        "--autosquash"
+        "--whitespace"
+    )
+
+    _simple_options "${opts[*]}"
+}
+
+_repo_selfupdate() {
+    local opts=(
+        "-h" "--help"
+        "--no-repo-verify"
+    )
+
+    _simple_options "${opts[*]}"
+}
+
+_repo_smartsync() {
+    local opts=(
+        "-h" "--help"
+        "-f" "--force-broken"
+        "-l" "--local-only"
+        "-n" "--network-only"
+        "-d" "--detach"
+        "-q" "--quiet"
+        "-j" "--jobs"
+        "--no-repo-verify"
+    )
+
+    _simple_options "${opts[*]}"
+}
+
+_repo_stage() {
+    local opts=(
+        "-h" "--help"
+        "-i" "--interactive"
+    )
+
+    _simple_options "${opts[*]}"
+}
+
+_repo_start() {
+    local opts=(
+        "-h" "--help"
+        "--all"
+    )
+
+    _simple_options "${opts[*]}"
+}
+
+_repo_status() {
+    local opts=(
+        "-h" "--help"
+        "-h" "--jobs"
+    )
+
+    _simple_options "${opts[*]}"
+}
+
+_repo_sync() {
+    local opts=(
+        "-h" "--help"
+        "-f" "--force-broken"
+        "-l" "--local-only"
+        "-n" "--network-only"
+        "-d" "--detach"
+        "-q" "--quiet"
+        "-j" "--jobs"
+        "-s" "--smart-sync"
+        "--no-repo-verify"
+    )
+
+    _simple_options "${opts[*]}"
+}
+
+_repo_upload() {
+    local opts=(
+        "-h" "--help"
+        "-t"
+        "--re" "--reviewers"
+        "--cc"
+        "--br"
+        "--no-verify"
+        "--verify"
+    )
+
+    _simple_options "${opts[*]}"
+}
+
+_repo_version() {
+    local opts=(
+        "-h" "--help"
     )
 
     _simple_options "${opts[*]}"
