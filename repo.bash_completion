@@ -1,0 +1,46 @@
+# -*- mode: sh; -*-
+
+_find_repo() {
+    local dir=$(pwd)
+    local found=1
+
+    while [ "${dir}" != / ]
+    do
+        if [ -f "${dir}/.repo/repo/main.py" ]
+        then
+            found=0
+            break
+        fi
+
+        dir=$(cd "${dir}/.." && pwd)
+    done
+
+    return ${found}
+}
+
+_repo() {
+    local curr="${COMP_WORDS[COMP_CWORD]}"
+
+    if [ ${COMP_CWORD} -eq 1 ]
+    then
+        local cmds
+
+        if _find_repo
+        then
+            cmds=("abandon" "branch" "branches" "checkout" "cherry-pick" "diff"
+                "download" "forall" "grep" "help" "init" "list" "prune" "rebase"
+                "selfupdate" "smartsync" "stage" "start" "status" "sync"
+                "upload" "version")
+        else
+            cmds=("help" "init")
+        fi
+
+        COMPREPLY=( $(compgen -W "${cmds[*]}" -- ${curr}) )
+    else
+        COMPREPLY=()
+    fi
+
+    return 0
+}
+
+complete -F _repo repo
