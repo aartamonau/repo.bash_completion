@@ -18,11 +18,46 @@ _find_repo() {
     return ${found}
 }
 
-_repo() {
+declare -A cmd_handlers
+cmd_handlers=(
+    ["init"]=_repo_init
+)
+
+_simple_options() {
+    local opts="$1"
     local curr="${COMP_WORDS[COMP_CWORD]}"
 
+    if [[ "${curr}" == -* ]]
+    then
+        COMPREPLY=( $(compgen -W "${opts}" -- ${curr}) )
+    else
+        COMPREPLY=()
+    fi
+
+    return 0
+}
+
+_repo_init() {
+    local opts=(
+        "-h" "--help"
+        "-q" "--quite"
+        "-u" "--manifest-url"
+        "-b" "--manifest-branch"
+        "-m" "--manifest-name"
+        "--mirror"
+        "--reference"
+        "--repo-url"
+        "--repo-branch"
+        "--no-repo-verify"
+    )
+
+    _simple_options "${opts[*]}"
+}
+
+_repo() {
     if [ ${COMP_CWORD} -eq 1 ]
     then
+        local curr="${COMP_WORDS[COMP_CWORD]}"
         local cmds
 
         if _find_repo
@@ -37,7 +72,14 @@ _repo() {
 
         COMPREPLY=( $(compgen -W "${cmds[*]}" -- ${curr}) )
     else
-        COMPREPLY=()
+        local cmd=${COMP_WORDS[1]}
+        local handler=${cmd_handlers["${cmd}"]}
+        if [ -n ${handler} ]
+        then
+            eval ${handler}
+        else
+            COMPREPLY=()
+        fi
     fi
 
     return 0
