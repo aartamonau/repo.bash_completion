@@ -84,7 +84,7 @@ _repo_help() {
     _simple_options "${opts[*]}"
 }
 
-_repo_anandon() {
+_repo_abandon() {
     local opts=(
         "-h" "--help"
     )
