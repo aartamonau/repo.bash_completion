@@ -30,6 +30,9 @@ CMD_HANDLERS=(
 declare -a OPTIONS
 declare -A ARG_OPTIONS
 
+# All possible completions for the context.
+declare -a COMPLETIONS
+
 _find_repo() {
     local dir=$(pwd)
     local found=1
@@ -79,11 +82,7 @@ _handle_options() {
         eval ${handler} "${curr}"
     elif _is_option "${curr}"
     then
-        COMPREPLY=(
-            $(compgen -W "${OPTIONS[*]} ${!ARG_OPTIONS[*]}" -- ${curr})
-        )
-    else
-        COMPREPLY=()
+        COMPLETIONS=( ${OPTIONS[@]} ${!ARG_OPTIONS[*]} )
     fi
 
     return 0
@@ -392,9 +391,12 @@ _repo_version() {
 }
 
 _repo() {
+    local curr="${COMP_WORDS[COMP_CWORD]}"
+
+    COMPLETIONS=()
+
     if [ ${COMP_CWORD} -eq 1 ]
     then
-        local curr="${COMP_WORDS[COMP_CWORD]}"
         local cmds
 
         if _find_repo
@@ -407,17 +409,17 @@ _repo() {
             cmds=("help" "init")
         fi
 
-        COMPREPLY=( $(compgen -W "${cmds[*]}" -- ${curr}) )
+        COMPLETIONS=( ${cmds[@]} )
     else
         local cmd=${COMP_WORDS[1]}
         local handler=${CMD_HANDLERS["${cmd}"]}
         if [ -n ${handler} ]
         then
             eval ${handler}
-        else
-            COMPREPLY=()
         fi
     fi
+
+    COMPREPLY=( $(compgen -W "${COMPLETIONS[*]}" -- ${curr}) )
 
     return 0
 }
