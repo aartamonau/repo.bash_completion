@@ -28,6 +28,7 @@ CMD_HANDLERS=(
 
 # To be populated by command handlers.
 declare -a OPTIONS
+declare -A ARG_OPTIONS
 
 _find_repo() {
     local dir=$(pwd)
@@ -47,12 +48,40 @@ _find_repo() {
     return ${found}
 }
 
+_no_completion() {
+    true
+}
+
+_is_option() {
+    local opt="$1"
+
+    [[ "${opt}" == -* ]]
+}
+
+_expects_arg() {
+    local opt="$1"
+
+    if [[ ${ARG_OPTIONS[$opt]} ]]
+    then
+        return 0
+    else
+        return 1
+    fi
+}
+
 _handle_options() {
     local curr="${COMP_WORDS[COMP_CWORD]}"
+    local prev="${COMP_WORDS[COMP_CWORD - 1]}"
 
-    if [[ "${curr}" == -* ]]
+    if _expects_arg "${prev}"
     then
-        COMPREPLY=( $(compgen -W "${OPTIONS[*]}" -- ${curr}) )
+        local handler=${ARG_OPTIONS[$prev]}
+        eval ${handler} "${curr}"
+    elif _is_option "${curr}"
+    then
+        COMPREPLY=(
+            $(compgen -W "${OPTIONS[*]} ${!ARG_OPTIONS[*]}" -- ${curr})
+        )
     else
         COMPREPLY=()
     fi
@@ -64,14 +93,20 @@ _repo_init() {
     OPTIONS=(
         "-h" "--help"
         "-q" "--quite"
-        "-u" "--manifest-url"
-        "-b" "--manifest-branch"
-        "-m" "--manifest-name"
         "--mirror"
-        "--reference"
-        "--repo-url"
-        "--repo-branch"
         "--no-repo-verify"
+    )
+
+    ARG_OPTIONS=(
+        ["-u"]=_no_completion
+        ["--manifest-url"]=_no_completion
+        ["-b"]=_no_completion
+        ["--manifest-branch"]=_no_completion
+        ["-m"]=_no_completion
+        ["--manifest-name"]=_no_completion
+        ["--reference"]=_no_completion
+        ["--repo-url"]=_no_completion
+        ["--repo-branch"]=_no_completion
     )
 
     _handle_options
@@ -83,6 +118,8 @@ _repo_help() {
         "-h" "--help"
     )
 
+    ARG_OPTIONS=()
+
     _handle_options
 }
 
@@ -90,6 +127,8 @@ _repo_abandon() {
     OPTIONS=(
         "-h" "--help"
     )
+
+    ARG_OPTIONS=()
 
     _handle_options
 }
@@ -99,6 +138,8 @@ _repo_branch() {
         "-h" "--help"
     )
 
+    ARG_OPTIONS=()
+
     _handle_options
 }
 
@@ -106,6 +147,8 @@ _repo_branches() {
     OPTIONS=(
         "-h" "--help"
     )
+
+    ARG_OPTIONS=()
 
     _handle_options
 }
@@ -115,6 +158,8 @@ _repo_checkout() {
         "-h" "--help"
     )
 
+    ARG_OPTIONS=()
+
     _handle_options
 }
 
@@ -122,6 +167,8 @@ _repo_cherry_pick() {
     OPTIONS=(
         "-h" "--help"
     )
+
+    ARG_OPTIONS=()
 
     _handle_options
 }
@@ -131,6 +178,8 @@ _repo_diff() {
         "-h" "--help"
     )
 
+    ARG_OPTIONS=()
+
     _handle_options
 }
 
@@ -139,15 +188,21 @@ _repo_download() {
         "-h" "--help"
     )
 
+    ARG_OPTIONS=()
+
     _handle_options
 }
 
 _repo_forall() {
     OPTIONS=(
-        "-c" "--command"
         "-h" "--help"
         "-p"
         "-v" "--verbose"
+    )
+
+    ARG_OPTIONS=(
+        ["-c"]=_no_completion
+        ["--command"]=_no_completion
     )
 
     # TODO: options must be context sensitive here
@@ -159,7 +214,6 @@ _repo_grep() {
         "-h" "--help"
         "--cached"
         "-r" "--revision"
-        "-e"
         "-i" "--ignore-case"
         "-a" "--text"
         "-I"
@@ -172,11 +226,15 @@ _repo_grep() {
         "--and" "--or" "--not"
         "-(" "-)"
         "-n"
-        "-C"
-        "-B"
-        "-A"
         "-l" "--name-only" "--files-with-matches"
         "-L" "--files-without-match"
+    )
+
+    ARG_OPTIONS=(
+        ["-e"]=_no_completion
+        ["-C"]=_no_completion
+        ["-B"]=_no_completion
+        ["-A"]=_no_completion
     )
 
     _handle_options
@@ -187,6 +245,8 @@ _repo_list() {
         "-h" "--help"
     )
 
+    ARG_OPTIONS=()
+
     _handle_options
 }
 
@@ -194,6 +254,8 @@ _repo_prune() {
     OPTIONS=(
         "-h" "--help"
     )
+
+    ARG_OPTIONS=()
 
     _handle_options
 }
@@ -206,7 +268,10 @@ _repo_rebase() {
         "--no-ff"
         "-q" "--quiet"
         "--autosquash"
-        "--whitespace"
+    )
+
+    ARG_OPTIONS=(
+        ["--whitespace"]=_no_completion
     )
 
     _handle_options
@@ -217,6 +282,8 @@ _repo_selfupdate() {
         "-h" "--help"
         "--no-repo-verify"
     )
+
+    ARG_OPTIONS=()
 
     _handle_options
 }
@@ -229,8 +296,13 @@ _repo_smartsync() {
         "-n" "--network-only"
         "-d" "--detach"
         "-q" "--quiet"
-        "-j" "--jobs"
         "--no-repo-verify"
+    )
+
+    ARG_OPTIONS=(
+        ["-j"]=_no_completion
+        ["--jobs"]=_no_completion
+
     )
 
     _handle_options
@@ -242,6 +314,8 @@ _repo_stage() {
         "-i" "--interactive"
     )
 
+    ARG_OPTIONS=()
+
     _handle_options
 }
 
@@ -251,13 +325,19 @@ _repo_start() {
         "--all"
     )
 
+    ARG_OPTIONS=()
+
     _handle_options
 }
 
 _repo_status() {
     OPTIONS=(
         "-h" "--help"
-        "-h" "--jobs"
+    )
+
+    ARG_OPTIONS=(
+        ["-j"]=_no_completion
+        ["--jobs"]=_no_completion
     )
 
     _handle_options
@@ -271,9 +351,13 @@ _repo_sync() {
         "-n" "--network-only"
         "-d" "--detach"
         "-q" "--quiet"
-        "-j" "--jobs"
         "-s" "--smart-sync"
         "--no-repo-verify"
+    )
+
+    ARG_OPTIONS=(
+        ["-j"]=_no_completion
+        ["--jobs"]=_no_completion
     )
 
     _handle_options
@@ -283,11 +367,15 @@ _repo_upload() {
     OPTIONS=(
         "-h" "--help"
         "-t"
-        "--re" "--reviewers"
-        "--cc"
-        "--br"
         "--no-verify"
         "--verify"
+    )
+
+    ARG_OPTIONS=(
+        ["--re"]=_no_completion
+        ["--reviewers"]=_no_completion
+        ["--cc"]=_no_completion
+        ["--br"]=_no_completion
     )
 
     _handle_options
@@ -297,6 +385,8 @@ _repo_version() {
     OPTIONS=(
         "-h" "--help"
     )
+
+    ARG_OPTIONS=()
 
     _handle_options
 }
