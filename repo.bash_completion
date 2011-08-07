@@ -1,27 +1,7 @@
 # -*- mode: sh; -*-
 
-declare -a OPTIONS
-
-_find_repo() {
-    local dir=$(pwd)
-    local found=1
-
-    while [ "${dir}" != / ]
-    do
-        if [ -f "${dir}/.repo/repo/main.py" ]
-        then
-            found=0
-            break
-        fi
-
-        dir=$(cd "${dir}/.." && pwd)
-    done
-
-    return ${found}
-}
-
-declare -A cmd_handlers
-cmd_handlers=(
+declare -A CMD_HANDLERS
+CMD_HANDLERS=(
     ["init"]=_repo_init
     ["help"]=_repo_help
     ["abandon"]=_repo_abandon
@@ -45,6 +25,27 @@ cmd_handlers=(
     ["upload"]=_repo_upload
     ["version"]=_repo_version
 )
+
+# To be populated by command handlers.
+declare -a OPTIONS
+
+_find_repo() {
+    local dir=$(pwd)
+    local found=1
+
+    while [ "${dir}" != / ]
+    do
+        if [ -f "${dir}/.repo/repo/main.py" ]
+        then
+            found=0
+            break
+        fi
+
+        dir=$(cd "${dir}/.." && pwd)
+    done
+
+    return ${found}
+}
 
 _handle_options() {
     local curr="${COMP_WORDS[COMP_CWORD]}"
@@ -319,7 +320,7 @@ _repo() {
         COMPREPLY=( $(compgen -W "${cmds[*]}" -- ${curr}) )
     else
         local cmd=${COMP_WORDS[1]}
-        local handler=${cmd_handlers["${cmd}"]}
+        local handler=${CMD_HANDLERS["${cmd}"]}
         if [ -n ${handler} ]
         then
             eval ${handler}
