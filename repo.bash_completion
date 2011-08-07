@@ -30,9 +30,6 @@ CMD_HANDLERS=(
 declare -a OPTIONS
 declare -A ARG_OPTIONS
 
-# All possible completions for the context.
-declare -a COMPLETIONS
-
 _find_repo() {
     local dir=$(pwd)
     local found=1
@@ -49,6 +46,20 @@ _find_repo() {
     done
 
     return ${found}
+}
+
+_gen_comps() {
+    local completions="$1"
+    local curr
+
+    if [ -n "$2" ]
+    then
+        curr="$2"
+    else
+        curr="${COMP_WORDS[COMP_CWORD]}"
+    fi
+
+    COMPREPLY=( $(compgen -W "${completions}" -- ${curr}) )
 }
 
 _strip_colors () {
@@ -73,7 +84,7 @@ _branch_completion() {
             _strip_colors | awk 'BEGIN { FS="|" } { print $1 }' | cut -c 3-
         )
 
-        COMPLETIONS=( ${branches} )
+        _gen_comps "${branches}"
     fi
 }
 
@@ -104,7 +115,7 @@ _handle_options() {
         eval ${handler} "${curr}"
     elif _is_option "${curr}"
     then
-        COMPLETIONS=( ${OPTIONS[@]} ${!ARG_OPTIONS[*]} )
+        _gen_comps "${OPTIONS[@]} ${!ARG_OPTIONS[*]}" "${curr}"
     fi
 
     return 0
@@ -413,12 +424,11 @@ _repo_version() {
 }
 
 _repo() {
-    local curr="${COMP_WORDS[COMP_CWORD]}"
-
-    COMPLETIONS=()
+    COMPREPLY=()
 
     if [ ${COMP_CWORD} -eq 1 ]
     then
+        local curr="${COMP_WORDS[COMP_CWORD]}"
         local cmds
 
         if _find_repo
@@ -431,7 +441,7 @@ _repo() {
             cmds=("help" "init")
         fi
 
-        COMPLETIONS=( ${cmds[@]} )
+        _gen_comps "${cmds[*]}" "${curr}"
     else
         local cmd=${COMP_WORDS[1]}
         local handler=${CMD_HANDLERS["${cmd}"]}
@@ -440,8 +450,6 @@ _repo() {
             eval ${handler}
         fi
     fi
-
-    COMPREPLY=( $(compgen -W "${COMPLETIONS[*]}" -- ${curr}) )
 
     return 0
 }
