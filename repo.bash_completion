@@ -255,7 +255,7 @@ _repo_help() {
 
     ARG_OPTIONS=()
 
-    _handle_options || _command_completion
+    _handle_options || _when_first _command_completion
 }
 
 _repo_abandon() {
