@@ -140,6 +140,8 @@ _handle_options() {
     elif _is_option "${curr}"
     then
         _gen_comps "${OPTIONS[@]} ${!ARG_OPTIONS[*]}" "${curr}"
+    else
+        return 1
     fi
 
     return 0
