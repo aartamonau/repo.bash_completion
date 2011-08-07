@@ -1,5 +1,7 @@
 # -*- mode: sh; -*-
 
+declare -a OPTIONS
+
 _find_repo() {
     local dir=$(pwd)
     local found=1
@@ -44,13 +46,12 @@ cmd_handlers=(
     ["version"]=_repo_version
 )
 
-_simple_options() {
-    local opts="$1"
+_handle_options() {
     local curr="${COMP_WORDS[COMP_CWORD]}"
 
     if [[ "${curr}" == -* ]]
     then
-        COMPREPLY=( $(compgen -W "${opts}" -- ${curr}) )
+        COMPREPLY=( $(compgen -W "${OPTIONS[*]}" -- ${curr}) )
     else
         COMPREPLY=()
     fi
@@ -59,7 +60,7 @@ _simple_options() {
 }
 
 _repo_init() {
-    local opts=(
+    OPTIONS=(
         "-h" "--help"
         "-q" "--quite"
         "-u" "--manifest-url"
@@ -72,76 +73,76 @@ _repo_init() {
         "--no-repo-verify"
     )
 
-    _simple_options "${opts[*]}"
+    _handle_options
 }
 
 _repo_help() {
-    local opts=(
+    OPTIONS=(
         "-a" "--all"
         "-h" "--help"
     )
 
-    _simple_options "${opts[*]}"
+    _handle_options
 }
 
 _repo_abandon() {
-    local opts=(
+    OPTIONS=(
         "-h" "--help"
     )
 
-    _simple_options "${opts[*]}"
+    _handle_options
 }
 
 _repo_branch() {
-    local opts=(
+    OPTIONS=(
         "-h" "--help"
     )
 
-    _simple_options "${opts[*]}"
+    _handle_options
 }
 
 _repo_branches() {
-    local opts=(
+    OPTIONS=(
         "-h" "--help"
     )
 
-    _simple_options "${opts[*]}"
+    _handle_options
 }
 
 _repo_checkout() {
-    local opts=(
+    OPTIONS=(
         "-h" "--help"
     )
 
-    _simple_options "${opts[*]}"
+    _handle_options
 }
 
 _repo_cherry_pick() {
-    local opts=(
+    OPTIONS=(
         "-h" "--help"
     )
 
-    _simple_options "${opts[*]}"
+    _handle_options
 }
 
 _repo_diff() {
-    local opts=(
+    OPTIONS=(
         "-h" "--help"
     )
 
-    _simple_options "${opts[*]}"
+    _handle_options
 }
 
 _repo_download() {
-    local opts=(
+    OPTIONS=(
         "-h" "--help"
     )
 
-    _simple_options "${opts[*]}"
+    _handle_options
 }
 
 _repo_forall() {
-    local opts=(
+    OPTIONS=(
         "-c" "--command"
         "-h" "--help"
         "-p"
@@ -149,11 +150,11 @@ _repo_forall() {
     )
 
     # TODO: options must be context sensitive here
-    _simple_options "${opts[*]}"
+    _handle_options
 }
 
 _repo_grep() {
-    local opts=(
+    OPTIONS=(
         "-h" "--help"
         "--cached"
         "-r" "--revision"
@@ -177,27 +178,27 @@ _repo_grep() {
         "-L" "--files-without-match"
     )
 
-    _simple_options "${opts[*]}"
+    _handle_options
 }
 
 _repo_list() {
-    local opts=(
+    OPTIONS=(
         "-h" "--help"
     )
 
-    _simple_options "${opts[*]}"
+    _handle_options
 }
 
 _repo_prune() {
-    local opts=(
+    OPTIONS=(
         "-h" "--help"
     )
 
-    _simple_options "${opts[*]}"
+    _handle_options
 }
 
 _repo_rebase() {
-    local opts=(
+    OPTIONS=(
         "-h" "--help"
         "-i" "--interactive"
         "-f" "--force-rebase"
@@ -207,20 +208,20 @@ _repo_rebase() {
         "--whitespace"
     )
 
-    _simple_options "${opts[*]}"
+    _handle_options
 }
 
 _repo_selfupdate() {
-    local opts=(
+    OPTIONS=(
         "-h" "--help"
         "--no-repo-verify"
     )
 
-    _simple_options "${opts[*]}"
+    _handle_options
 }
 
 _repo_smartsync() {
-    local opts=(
+    OPTIONS=(
         "-h" "--help"
         "-f" "--force-broken"
         "-l" "--local-only"
@@ -231,38 +232,38 @@ _repo_smartsync() {
         "--no-repo-verify"
     )
 
-    _simple_options "${opts[*]}"
+    _handle_options
 }
 
 _repo_stage() {
-    local opts=(
+    OPTIONS=(
         "-h" "--help"
         "-i" "--interactive"
     )
 
-    _simple_options "${opts[*]}"
+    _handle_options
 }
 
 _repo_start() {
-    local opts=(
+    OPTIONS=(
         "-h" "--help"
         "--all"
     )
 
-    _simple_options "${opts[*]}"
+    _handle_options
 }
 
 _repo_status() {
-    local opts=(
+    OPTIONS=(
         "-h" "--help"
         "-h" "--jobs"
     )
 
-    _simple_options "${opts[*]}"
+    _handle_options
 }
 
 _repo_sync() {
-    local opts=(
+    OPTIONS=(
         "-h" "--help"
         "-f" "--force-broken"
         "-l" "--local-only"
@@ -274,11 +275,11 @@ _repo_sync() {
         "--no-repo-verify"
     )
 
-    _simple_options "${opts[*]}"
+    _handle_options
 }
 
 _repo_upload() {
-    local opts=(
+    OPTIONS=(
         "-h" "--help"
         "-t"
         "--re" "--reviewers"
@@ -288,15 +289,15 @@ _repo_upload() {
         "--verify"
     )
 
-    _simple_options "${opts[*]}"
+    _handle_options
 }
 
 _repo_version() {
-    local opts=(
+    OPTIONS=(
         "-h" "--help"
     )
 
-    _simple_options "${opts[*]}"
+    _handle_options
 }
 
 _repo() {
