@@ -224,6 +224,20 @@ _when_first() {
     _when_ix 0 "$1"
 }
 
+_when_even() {
+    local completion="$1"
+
+    _arg_index arg_ix
+
+    if [[ $(( ${arg_ix} % 2 )) == 0 ]]
+    then
+        ${completion}
+        return 0
+    else
+        return 1
+    fi
+}
+
 _repo_init() {
     OPTIONS=(
         "-h" "--help"
@@ -325,8 +339,7 @@ _repo_download() {
 
     ARG_OPTIONS=()
 
-    # TODO: project names are interleaved with changes here
-    _handle_options || _project_completion
+    _handle_options || _when_even _project_completion
 }
 
 _repo_forall() {
