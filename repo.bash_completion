@@ -188,7 +188,8 @@ _repo_abandon() {
 
     ARG_OPTIONS=()
 
-    _handle_options
+    # TODO: project names must be completed here too
+    _handle_options || _branch_completion
 }
 
 _repo_branch() {
@@ -218,7 +219,8 @@ _repo_checkout() {
 
     ARG_OPTIONS=()
 
-    _handle_options
+    # TODO: project names must be completed here too
+    _handle_options || _branch_completion
 }
 
 _repo_cherry_pick() {
