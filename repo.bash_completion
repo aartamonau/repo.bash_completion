@@ -45,7 +45,16 @@ _find_repo() {
         dir=$(cd "${dir}/.." && pwd)
     done
 
-    return ${found}
+    if [ ${found} -eq 0 ]
+    then
+        echo "${dir}"
+    fi
+}
+
+_is_repo_dir() {
+    local repo_root=$(_find_repo)
+
+    [ -n "${repo_root}" ]
 }
 
 _gen_comps() {
@@ -91,6 +100,16 @@ _branch_completion() {
 _dir_completion() {
     local cur="${COMP_WORDS[COMP_CWORD]}"
     _filedir -d
+}
+
+_project_completion() {
+    local repo_root=$(_find_repo)
+
+    if [ -n "${repo_root}" -a -f "${repo_root}/.repo/project.list" ]
+    then
+        local projects=$(cat "${repo_root}/.repo/project.list")
+        _gen_comps "${projects}"
+    fi
 }
 
 _is_option() {
@@ -436,7 +455,7 @@ _repo() {
         local curr="${COMP_WORDS[COMP_CWORD]}"
         local cmds
 
-        if _find_repo
+        if _is_repo_dir
         then
             cmds=("abandon" "branch" "branches" "checkout" "cherry-pick" "diff"
                 "download" "forall" "grep" "help" "init" "list" "prune" "rebase"
