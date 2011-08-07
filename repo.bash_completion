@@ -88,6 +88,11 @@ _branch_completion() {
     fi
 }
 
+_dir_completion() {
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+    _filedir -d
+}
+
 _is_option() {
     local opt="$1"
 
@@ -136,7 +141,7 @@ _repo_init() {
         ["--manifest-branch"]=_no_completion
         ["-m"]=_no_completion
         ["--manifest-name"]=_no_completion
-        ["--reference"]=_no_completion
+        ["--reference"]=_dir_completion
         ["--repo-url"]=_no_completion
         ["--repo-branch"]=_no_completion
     )
