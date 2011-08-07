@@ -240,7 +240,7 @@ _repo_diff() {
 
     ARG_OPTIONS=()
 
-    _handle_options
+    _handle_options || _project_completion
 }
 
 _repo_download() {
@@ -250,7 +250,8 @@ _repo_download() {
 
     ARG_OPTIONS=()
 
-    _handle_options
+    # TODO: project names are interleaved with changes here
+    _handle_options || _project_completion
 }
 
 _repo_forall() {
@@ -297,7 +298,7 @@ _repo_grep() {
         ["-A"]=_no_completion
     )
 
-    _handle_options
+    _handle_options || _project_completion
 }
 
 _repo_list() {
@@ -307,7 +308,7 @@ _repo_list() {
 
     ARG_OPTIONS=()
 
-    _handle_options
+    _handle_options || _project_completion
 }
 
 _repo_prune() {
@@ -317,7 +318,7 @@ _repo_prune() {
 
     ARG_OPTIONS=()
 
-    _handle_options
+    _handle_options || _project_completion
 }
 
 _repo_rebase() {
@@ -334,7 +335,7 @@ _repo_rebase() {
         ["--whitespace"]=_no_completion
     )
 
-    _handle_options
+    _handle_options || _project_completion
 }
 
 _repo_selfupdate() {
@@ -365,7 +366,7 @@ _repo_smartsync() {
 
     )
 
-    _handle_options
+    _handle_options || _project_completion
 }
 
 _repo_stage() {
@@ -376,7 +377,7 @@ _repo_stage() {
 
     ARG_OPTIONS=()
 
-    _handle_options
+    _handle_options || _project_completion
 }
 
 _repo_start() {
@@ -387,7 +388,7 @@ _repo_start() {
 
     ARG_OPTIONS=()
 
-    _handle_options
+    _handle_options || _project_completion
 }
 
 _repo_status() {
@@ -400,7 +401,7 @@ _repo_status() {
         ["--jobs"]=_no_completion
     )
 
-    _handle_options
+    _handle_options || _project_completion
 }
 
 _repo_sync() {
@@ -420,7 +421,7 @@ _repo_sync() {
         ["--jobs"]=_no_completion
     )
 
-    _handle_options
+    _handle_options || _project_completion
 }
 
 _repo_upload() {
@@ -438,7 +439,7 @@ _repo_upload() {
         ["--br"]=_branch_completion
     )
 
-    _handle_options
+    _handle_options || _project_completion
 }
 
 _repo_version() {
