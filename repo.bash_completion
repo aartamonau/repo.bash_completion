@@ -80,6 +80,23 @@ _no_completion() {
     true
 }
 
+_command_completion() {
+    local curr="${COMP_WORDS[COMP_CWORD]}"
+    local cmds
+
+    if _is_repo_dir
+    then
+        cmds=("abandon" "branch" "branches" "checkout" "cherry-pick" "diff"
+            "download" "forall" "grep" "help" "init" "list" "prune" "rebase"
+            "selfupdate" "smartsync" "stage" "start" "status" "sync"
+            "upload" "version")
+    else
+        cmds=("help" "init")
+    fi
+
+    _gen_comps "${cmds[*]}" "${curr}"
+}
+
 _branch_completion() {
     local raw_branches
 
@@ -178,7 +195,7 @@ _repo_help() {
 
     ARG_OPTIONS=()
 
-    _handle_options
+    _handle_options || _command_completion
 }
 
 _repo_abandon() {
@@ -457,20 +474,7 @@ _repo() {
 
     if [ ${COMP_CWORD} -eq 1 ]
     then
-        local curr="${COMP_WORDS[COMP_CWORD]}"
-        local cmds
-
-        if _is_repo_dir
-        then
-            cmds=("abandon" "branch" "branches" "checkout" "cherry-pick" "diff"
-                "download" "forall" "grep" "help" "init" "list" "prune" "rebase"
-                "selfupdate" "smartsync" "stage" "start" "status" "sync"
-                "upload" "version")
-        else
-            cmds=("help" "init")
-        fi
-
-        _gen_comps "${cmds[*]}" "${curr}"
+        _command_completion
     else
         local cmd=${COMP_WORDS[1]}
         local handler=${CMD_HANDLERS["${cmd}"]}
