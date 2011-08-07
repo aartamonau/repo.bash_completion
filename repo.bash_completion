@@ -164,6 +164,66 @@ _handle_options() {
     return 0
 }
 
+_is_known_shortopt() {
+    local needle="$1"
+
+    for opt in ${OPTIONS[@]}
+    do
+        if [ "${opt}" = "${needle}" ]
+        then
+            return 0
+        fi
+    done
+
+    return 1
+}
+
+_is_known_longopt() {
+    local needle="$1"
+
+    [[ ${ARG_OPTIONS[$1]} ]]
+}
+
+_arg_index() {
+    local -i i=2               # skip repo and command
+    local -i ix=0
+
+    while [ ${i} -lt ${COMP_CWORD} ]
+    do
+        if _is_known_shortopt "${COMP_WORDS[i]}"
+        then
+            i+=1
+        elif _is_known_longopt "${COMP_WORDS[i]}"
+        then
+            i+=2
+        else
+            i+=1
+            ix+=1
+        fi
+    done
+
+    eval $1="${ix}"
+}
+
+_when_ix() {
+    local ix="$1"
+    local completion="$2"
+
+    _arg_index arg_ix
+
+    if [ ${arg_ix} -eq ${ix} ]
+    then
+        ${completion}
+        return 0
+    else
+        return 1
+    fi
+}
+
+_when_first() {
+    _when_ix 0 "$1"
+}
+
 _repo_init() {
     OPTIONS=(
         "-h" "--help"
@@ -205,8 +265,7 @@ _repo_abandon() {
 
     ARG_OPTIONS=()
 
-    # TODO: project names must be completed here too
-    _handle_options || _branch_completion
+    _handle_options || _when_first _branch_completion || _project_completion
 }
 
 _repo_branch() {
@@ -236,8 +295,7 @@ _repo_checkout() {
 
     ARG_OPTIONS=()
 
-    # TODO: project names must be completed here too
-    _handle_options || _branch_completion
+    _handle_options || _when_first _branch_completion || _project_completion
 }
 
 _repo_cherry_pick() {
