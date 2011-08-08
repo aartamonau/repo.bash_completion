@@ -229,7 +229,7 @@ _when_even() {
 
     _arg_index arg_ix
 
-    if [[ $(( ${arg_ix} % 2 )) == 0 ]]
+    if [ $(( ${arg_ix} % 2 )) -eq 0 ]
     then
         ${completion}
         return 0
