@@ -30,6 +30,14 @@ CMD_HANDLERS=(
 declare -a OPTIONS
 declare -A ARG_OPTIONS
 
+declare cur
+declare prev
+
+_init_cur_prev() {
+    cur=$(_get_cword "=")
+    prev=$(_get_cword "=" 1)
+}
+
 _find_repo() {
     local dir=$(pwd)
     local found=1
@@ -59,14 +67,6 @@ _is_repo_dir() {
 
 _gen_comps() {
     local completions="$1"
-    local cur
-
-    if [ -n "$2" ]
-    then
-        cur="$2"
-    else
-        cur=$(_get_cword)
-    fi
 
     COMPREPLY=( $(compgen -W "${completions}" -- ${cur}) )
 }
@@ -81,7 +81,6 @@ _no_completion() {
 }
 
 _command_completion() {
-    local cur=$(_get_cword)
     local cmds
 
     if _is_repo_dir
@@ -94,7 +93,7 @@ _command_completion() {
         cmds=("help" "init")
     fi
 
-    _gen_comps "${cmds[*]}" "${cur}"
+    _gen_comps "${cmds[*]}"
 }
 
 _branch_completion() {
@@ -115,7 +114,6 @@ _branch_completion() {
 }
 
 _dir_completion() {
-    local cur=$(_get_cword)
     _filedir -d
 }
 
@@ -147,16 +145,13 @@ _expects_arg() {
 }
 
 _handle_options() {
-    local cur=$(_get_cword)
-    local prev=$(_get_cword "" 1)
-
     if _expects_arg "${prev}"
     then
         local handler=${ARG_OPTIONS[$prev]}
         eval ${handler} "${cur}"
     elif _is_option "${cur}"
     then
-        _gen_comps "${OPTIONS[@]} ${!ARG_OPTIONS[*]}" "${cur}"
+        _gen_comps "${OPTIONS[@]} ${!ARG_OPTIONS[*]}"
     else
         return 1
     fi
@@ -542,6 +537,8 @@ _repo_version() {
 
 _repo() {
     COMPREPLY=()
+
+    _init_cur_prev
 
     if [ ${COMP_CWORD} -eq 1 ]
     then
