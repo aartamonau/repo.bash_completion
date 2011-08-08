@@ -59,16 +59,16 @@ _is_repo_dir() {
 
 _gen_comps() {
     local completions="$1"
-    local curr
+    local cur
 
     if [ -n "$2" ]
     then
-        curr="$2"
+        cur="$2"
     else
-        curr=$(_get_cword)
+        cur=$(_get_cword)
     fi
 
-    COMPREPLY=( $(compgen -W "${completions}" -- ${curr}) )
+    COMPREPLY=( $(compgen -W "${completions}" -- ${cur}) )
 }
 
 _strip_colors () {
@@ -81,7 +81,7 @@ _no_completion() {
 }
 
 _command_completion() {
-    local curr=$(_get_cword)
+    local cur=$(_get_cword)
     local cmds
 
     if _is_repo_dir
@@ -94,7 +94,7 @@ _command_completion() {
         cmds=("help" "init")
     fi
 
-    _gen_comps "${cmds[*]}" "${curr}"
+    _gen_comps "${cmds[*]}" "${cur}"
 }
 
 _branch_completion() {
@@ -147,16 +147,16 @@ _expects_arg() {
 }
 
 _handle_options() {
-    local curr=$(_get_cword)
+    local cur=$(_get_cword)
     local prev=$(_get_cword "" 1)
 
     if _expects_arg "${prev}"
     then
         local handler=${ARG_OPTIONS[$prev]}
-        eval ${handler} "${curr}"
-    elif _is_option "${curr}"
+        eval ${handler} "${cur}"
+    elif _is_option "${cur}"
     then
-        _gen_comps "${OPTIONS[@]} ${!ARG_OPTIONS[*]}" "${curr}"
+        _gen_comps "${OPTIONS[@]} ${!ARG_OPTIONS[*]}" "${cur}"
     else
         return 1
     fi
