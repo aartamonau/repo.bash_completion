@@ -476,7 +476,7 @@ _repo_start() {
 
     ARG_OPTIONS=()
 
-    _handle_options || _project_completion
+    _handle_options || _when_first _branch_completion || _project_completion
 }
 
 _repo_status() {
