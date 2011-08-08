@@ -36,6 +36,8 @@ declare prev
 _init_cur_prev() {
     cur=$(_get_cword "=")
     prev=$(_get_cword "=" 1)
+
+    _split_longopt
 }
 
 _find_repo() {
@@ -67,8 +69,20 @@ _is_repo_dir() {
 
 _gen_comps() {
     local completions="$1"
+    local suffix="${2:- }"
 
-    COMPREPLY=( $(compgen -W "${completions}" -- ${cur}) )
+    local -i i
+    local -a tmp=( $(compgen -W "${completions}" -- ${cur}) )
+
+    for (( i=0; i < ${#tmp[*]}; i++ ))
+    do
+        tmp[$i]="${tmp[$i]}${suffix}"
+    done
+
+    COMPREPLY=(
+        "${COMPREPLY[@]}"
+        "${tmp[@]}"
+    )
 }
 
 _strip_colors () {
@@ -151,7 +165,8 @@ _handle_options() {
         eval ${handler} "${cur}"
     elif _is_option "${cur}"
     then
-        _gen_comps "${OPTIONS[@]} ${!ARG_OPTIONS[*]}"
+        _gen_comps "${OPTIONS[*]}"
+        _gen_comps "${!ARG_OPTIONS[*]}" "="
     else
         return 1
     fi
@@ -191,6 +206,9 @@ _arg_index() {
         elif _is_known_longopt "${COMP_WORDS[i]}"
         then
             i+=2
+        elif _is_option "${COMP_WORDS[i]}"
+        then
+            i+=1
         else
             i+=1
             ix+=1
@@ -555,4 +573,4 @@ _repo() {
     return 0
 }
 
-complete -F _repo repo
+complete -o nospace -F _repo repo
