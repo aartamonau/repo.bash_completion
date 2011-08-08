@@ -65,7 +65,7 @@ _gen_comps() {
     then
         curr="$2"
     else
-        curr="${COMP_WORDS[COMP_CWORD]}"
+        curr=$(_get_cword)
     fi
 
     COMPREPLY=( $(compgen -W "${completions}" -- ${curr}) )
@@ -81,7 +81,7 @@ _no_completion() {
 }
 
 _command_completion() {
-    local curr="${COMP_WORDS[COMP_CWORD]}"
+    local curr=$(_get_cword)
     local cmds
 
     if _is_repo_dir
@@ -115,7 +115,7 @@ _branch_completion() {
 }
 
 _dir_completion() {
-    local cur="${COMP_WORDS[COMP_CWORD]}"
+    local cur=$(_get_cword)
     _filedir -d
 }
 
@@ -147,8 +147,8 @@ _expects_arg() {
 }
 
 _handle_options() {
-    local curr="${COMP_WORDS[COMP_CWORD]}"
-    local prev="${COMP_WORDS[COMP_CWORD - 1]}"
+    local curr=$(_get_cword)
+    local prev=$(_get_cword "" 1)
 
     if _expects_arg "${prev}"
     then
