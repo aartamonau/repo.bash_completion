@@ -21,7 +21,7 @@ CMD_HANDLERS=(
     ["stage"]=_repo_stage
     ["start"]=_repo_start
     ["status"]=_repo_status
-    ["status"]=_repo_sync
+    ["sync"]=_repo_sync
     ["upload"]=_repo_upload
     ["version"]=_repo_version
 )
