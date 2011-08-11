@@ -166,6 +166,12 @@ _is_option() {
     [[ "${opt}" == -* ]]
 }
 
+_is_long_option() {
+    local opt="$1"
+
+    [[ "${opt}" == --* ]]
+}
+
 _expects_arg() {
     local opt="$1"
 
@@ -185,7 +191,22 @@ _handle_options() {
     elif _is_option "${cur}"
     then
         _gen_comps "${OPTIONS[*]}"
-        _gen_comps "${!ARG_OPTIONS[*]}" "="
+
+        local arg_short
+        local arg_long
+
+        for opt in "${!ARG_OPTIONS[@]}"
+        do
+            if _is_long_option "${opt}"
+            then
+                arg_long="${arg_long} ${opt}"
+            else
+                arg_short="${arg_short} ${opt}"
+            fi
+        done
+
+        _gen_comps "${arg_short}"
+        _gen_comps "${arg_long}" "="
     else
         return 1
     fi
