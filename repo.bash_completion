@@ -141,6 +141,25 @@ _project_completion() {
     fi
 }
 
+_manifest_completion() {
+    local repo_root=$(_find_repo)
+
+    if [ -n "${repo_root}" ]
+    then
+        local manifests_dir="${repo_root}/.repo/manifests"
+        local git_dir="${manifests_dir}/.git"
+        local candidates
+
+        manifests=$(
+            git --git-dir "${git_dir}" ls-files "*.xml" 2>/dev/null)
+
+        if [ $? -eq 0 ]
+        then
+            _gen_comps "${manifests}"
+        fi
+    fi
+}
+
 _is_option() {
     local opt="$1"
 
@@ -264,8 +283,8 @@ _repo_init() {
         ["--manifest-url"]=_no_completion
         ["-b"]=_no_completion
         ["--manifest-branch"]=_no_completion
-        ["-m"]=_no_completion
-        ["--manifest-name"]=_no_completion
+        ["-m"]=_manifest_completion
+        ["--manifest-name"]=_manifest_completion
         ["--reference"]=_dir_completion
         ["--repo-url"]=_no_completion
         ["--repo-branch"]=_no_completion
