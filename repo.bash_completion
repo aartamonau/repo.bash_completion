@@ -160,6 +160,10 @@ _manifest_completion() {
     fi
 }
 
+_path_cmd_completion() {
+    _gen_comps "$(compgen -c ${cur})"
+}
+
 _is_option() {
     local opt="$1"
 
@@ -291,6 +295,41 @@ _when_even() {
     fi
 }
 
+_cmp_opts() {
+    local opt="$1"
+    local word="$2"
+
+    if _is_option "${opt}" && ! _is_long_option "${opt}"
+    then
+        [ "${word}" == "${opt}" ]
+    else
+        [[ "${word}" == "${opt}"=* || "${word}" == "${opt}" ]]
+    fi
+}
+
+_before() {
+    local completion="$1"
+    local words
+
+    shift
+
+    _get_comp_words_by_ref -n = words
+
+    for word in "${words[@]}"
+    do
+        for needle in "$@"
+        do
+            if _cmp_opts "${needle}" "${word}"
+            then
+                return 1
+            fi
+        done
+    done
+
+    ${completion}
+    return 0
+}
+
 _repo_init() {
     OPTIONS=(
         "-h" "--help"
@@ -403,12 +442,11 @@ _repo_forall() {
     )
 
     ARG_OPTIONS=(
-        ["-c"]=_no_completion
-        ["--command"]=_no_completion
+        ["-c"]=_path_cmd_completion
+        ["--command"]=_path_cmd_completion
     )
 
-    # TODO: options must be context sensitive here
-    _handle_options
+    _handle_options || _before _project_completion -c --command || _filedir
 }
 
 _repo_grep() {
