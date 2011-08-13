@@ -32,11 +32,45 @@ declare -A ARG_OPTIONS
 
 declare cur
 declare prev
+declare prev_words
 
 _init_cur_prev() {
-    cur=$(_get_cword "=")
-    prev=$(_get_cword "=" 1)
+    local -i i
 
+    # _get_comp_words_by_ref -n = transforms --br= --re=reviewer@somewhere.com
+    #                                             ^
+    # into a single word --br=--re=reviewer@somewhere.com which makes it
+    # impossible to complete branch in this case. If = was not in
+    # COMP_WORDBREAKS it would resolve the issue. But COMP_WORDBREAKS can be
+    # set only globally. Thus this ugly workaround.
+    #
+    # TODO: Ensure that this works as expected.
+    if [[ ${COMP_WORDBREAKS} == *=* ]]
+    then
+        for (( i=0; i < ${#COMP_WORDS[*]}; i++ ))
+        do
+            if [ "${COMP_WORDS[i]}" = "=" ]
+            then
+                if [ $i -lt ${COMP_CWORD} ]
+                then
+                    unset COMP_WORDS[$i]
+                    (( COMP_CWORD-- ))
+                    (( COMP_POINT-- ))
+                elif [ $i -eq ${COMP_CWORD} ]
+                then
+                    COMP_WORDS[$i]=" "
+                fi
+            fi
+        done
+    fi
+
+    prev_words=()
+    for (( i=0; i < ${COMP_CWORD}; i++ ))
+    do
+        prev_words[$i]="${COMP_WORDS[$i]}"
+    done
+
+     _get_comp_words_by_ref cur prev
     _split_longopt
 }
 
@@ -313,9 +347,7 @@ _before() {
 
     shift
 
-    _get_comp_words_by_ref -n = words
-
-    for word in "${words[@]}"
+    for word in "${prev_words[@]}"
     do
         for needle in "$@"
         do
