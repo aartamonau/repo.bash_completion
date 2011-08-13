@@ -1,1 +1,13 @@
 Bash completion for repo utility (http://code.google.com/p/git-repo/).
+
+License: public domain.
+
+Known bugs:
+
+1. Due to bash completion peculiarities completion inside an input line does not
+work as expected. E.g.:
+  repo upload --br= --reviewers=reviewer@somewhere.com project
+  cursor --------> ^
+In this case branch won't be completed before you enter any letter. This bug
+can be worked around but this requires reimplementing of bash completion library
+word splitting routines which I'm reluctant to do right now.
