@@ -132,13 +132,10 @@ _dir_completion() {
 }
 
 _project_completion() {
-    local repo_root=$(_find_repo)
-
-    if [ -n "${repo_root}" -a -f "${repo_root}/.repo/project.list" ]
-    then
-        local projects=$(cat "${repo_root}/.repo/project.list")
-        _gen_comps "${projects}"
-    fi
+    # Retrieve a list of all repo project names (as opposed to project paths)
+    local projects
+    projects=$(repo forall -c 'echo $REPO_PROJECT' 2>/dev/null)
+    _gen_comps "${projects}"
 }
 
 _manifest_completion() {
