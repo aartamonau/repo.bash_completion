@@ -33,6 +33,10 @@ declare -A ARG_OPTIONS
 declare cur
 declare prev
 
+# Determine what option to use for sed extended regular expressions
+declare sedextregex
+sedextregex=$( [ "Darwin" == "$(uname -s)" ] && echo '-E' || echo '-r' )
+
 _init_cur_prev() {
     cur=$(_get_cword "=")
     prev=$(_get_cword "=" 1)
@@ -87,7 +91,7 @@ _gen_comps() {
 
 _strip_colors () {
     # taken from http://goo.gl/7KlLZ
-    sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g"
+    sed ${sedextregex} "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g"
 }
 
 _no_completion() {
